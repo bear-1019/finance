@@ -1,1 +1,24 @@
-{"name":"Future Ledger","short_name":"Ledger","start_url":"./","display":"standalone","background_color":"#f5f5f2","theme_color":"#f5f5f2","lang":"zh-Hant-TW","icons":[]}
+{
+  "name": "財務藍圖 Future Ledger",
+  "short_name": "財務藍圖",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f5f5f1",
+  "theme_color": "#f5f5f1",
+  "lang": "zh-Hant-TW",
+  "icons": [
+    {
+      "src": "./icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

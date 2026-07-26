@@ -1,137 +1,223 @@
 <!doctype html>
 <html lang="zh-Hant-TW">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#f5f5f2" />
-  <title>Future Ledger</title>
-  <link rel="manifest" href="./manifest.webmanifest" />
-  <link rel="stylesheet" href="./styles.css" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f5f5f1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="財務藍圖">
+  <link rel="apple-touch-icon" href="./icons/icon-180.png">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="stylesheet" href="./styles.css">
+  <title>財務藍圖</title>
 </head>
 <body>
-  <main class="app-shell">
-    <header class="topbar">
-      <div><p class="eyebrow">PERSONAL FINANCE</p><h1>Future Ledger</h1></div>
-      <button id="quickSettingsBtn" class="text-button">設定</button>
-    </header>
+<main class="app-shell">
+  <header class="topbar">
+    <div><p class="eyebrow">LIFE FINANCE</p><h1>財務藍圖</h1></div>
+    <button id="quickSettingsBtn" class="text-button">設定</button>
+  </header>
 
-    <section id="overviewPage" class="page active">
-      <section class="hero-card">
-        <div class="hero-row"><div><p class="muted">截至 2026 年底</p><p class="hero-label">目前淨資產</p></div><span class="status-pill">基準起點</span></div>
-        <div id="overviewNetWorth" class="hero-value">NT$ 0</div>
-        <div class="metric-grid">
-          <div class="metric"><span>現金</span><strong id="overviewCash">NT$ 0</strong></div>
-          <div class="metric"><span>投資資產</span><strong id="overviewInvestment">NT$ 0</strong></div>
-          <div class="metric"><span>儲蓄險</span><strong id="overviewInsurance">NT$ 0</strong></div>
-          <div class="metric"><span>負債</span><strong id="overviewDebt">NT$ 0</strong></div>
-        </div>
-      </section>
-
-      <section class="card section-card">
-        <div class="section-heading"><div><p class="section-kicker">PLANS</p><h2>計畫總覽</h2></div></div>
-        <div class="plan-list">
-          <article class="plan-row"><div><span class="plan-type">CAR</span><h3>買車計畫</h3><p id="overviewCarText" class="muted"></p></div><button class="secondary-button" data-edit-plan="car">編輯</button></article>
-          <article class="plan-row"><div><span class="plan-type">HOME</span><h3>買房計畫</h3><p id="overviewHouseText" class="muted"></p></div><button class="secondary-button" data-edit-plan="house">編輯</button></article>
-        </div>
-      </section>
-
-      <section class="card section-card">
-        <div class="section-heading"><div><p class="section-kicker">OUTLOOK</p><h2>未來摘要</h2></div></div>
-        <div id="outlookList" class="outlook-list"></div>
-      </section>
+  <section id="overviewPage" class="page active">
+    <section class="hero-card">
+      <div class="hero-row">
+        <div><p class="muted">2026 年 12 月底</p><p class="hero-label">起始淨資產</p></div>
+        <span class="status-pill">規劃基準</span>
+      </div>
+      <div id="overviewNetWorth" class="hero-value">NT$ 0</div>
+      <div class="metric-grid">
+        <div class="metric"><span>現金流</span><strong id="overviewCash">NT$ 0</strong></div>
+        <div class="metric"><span>台股與 ETF</span><strong id="overviewMarket">NT$ 0</strong></div>
+        <div class="metric"><span>公司認股</span><strong id="overviewEmployeeStock">NT$ 0</strong></div>
+        <div class="metric"><span>儲蓄險</span><strong id="overviewInsurance">NT$ 0</strong></div>
+      </div>
     </section>
 
-    <section id="timelinePage" class="page">
-      <section class="card scenario-card">
-        <div class="section-heading"><div><p class="section-kicker">SCENARIO</p><h2>套用人生計畫</h2></div></div>
-        <label class="switch-row"><div><strong>買車</strong><span id="carSwitchDescription">依買車計畫重新計算</span></div><input id="carToggle" type="checkbox" class="switch-input"><span class="switch-ui"></span></label>
-        <label class="switch-row"><div><strong>買房</strong><span id="houseSwitchDescription">依買房計畫重新計算</span></div><input id="houseToggle" type="checkbox" class="switch-input"><span class="switch-ui"></span></label>
-      </section>
-
-      <section class="hero-card compact-hero">
-        <div class="hero-row"><div><p id="selectedPeriod" class="muted">2027 年 1 月底</p><p class="hero-label">預估淨資產</p></div><button id="periodBtn" class="text-button">選擇月份</button></div>
-        <div id="netWorthValue" class="hero-value">NT$ 0</div>
-        <p id="scenarioDelta" class="scenario-delta hidden"></p>
-        <div class="metric-grid">
-          <div class="metric"><span>可動用現金</span><strong id="cashValue">NT$ 0</strong></div>
-          <div class="metric"><span>投資資產</span><strong id="investmentValue">NT$ 0</strong></div>
-          <div class="metric"><span>保單價值</span><strong id="insuranceValue">NT$ 0</strong></div>
-          <div class="metric"><span>總負債</span><strong id="debtValue">NT$ 0</strong></div>
-        </div>
-      </section>
-
-      <section class="card section-card">
-        <div class="section-heading"><div><p class="section-kicker">YEAR VIEW</p><h2>每月資產</h2></div><select id="yearSelect" class="compact-select"></select></div>
-        <div id="monthList" class="month-list"></div>
-      </section>
-
-      <section class="card section-card">
-        <div class="section-heading"><div><p class="section-kicker">MONTH DETAIL</p><h2>本月計算</h2></div><button id="toggleDetailBtn" class="text-button">顯示更多</button></div>
-        <div class="summary-list">
-          <div class="summary-row"><span>收入</span><strong id="incomeValue" class="positive">+NT$ 0</strong></div>
-          <div class="summary-row"><span>生活與固定支出</span><strong id="expenseValue">−NT$ 0</strong></div>
-          <div class="summary-row"><span>投資投入</span><strong id="investmentContributionValue">−NT$ 0</strong></div>
-          <div class="summary-row"><span>儲蓄險保費</span><strong id="insurancePremiumValue">−NT$ 0</strong></div>
-          <div class="summary-row"><span>投資損益</span><strong id="investmentReturnValue" class="positive">+NT$ 0</strong></div>
-          <div id="planCostRow" class="summary-row hidden"><span>計畫支出</span><strong id="planCostValue">−NT$ 0</strong></div>
-        </div>
-        <div id="detailPanel" class="detail-panel hidden"><div class="formula-card"><p class="formula-title">月底淨資產計算</p><p id="formulaText"></p></div><div id="detailGroups"></div></div>
-      </section>
+    <section class="card section-card">
+      <div class="section-heading"><div><p class="section-kicker">NEXT MILESTONES</p><h2>計畫總覽</h2></div></div>
+      <div class="plan-list">
+        <article class="plan-row"><div><span class="plan-type">CAR</span><h3>買車計畫</h3><p id="overviewCarText" class="muted"></p></div><button class="secondary-button" data-page-jump="plansPage">編輯</button></article>
+        <article class="plan-row"><div><span class="plan-type">HOME</span><h3>買房計畫</h3><p id="overviewHouseText" class="muted"></p></div><button class="secondary-button" data-page-jump="plansPage">編輯</button></article>
+      </div>
     </section>
 
-    <section id="settingsPage" class="page">
-      <div class="settings-header"><div><p class="section-kicker">FINANCIAL INPUTS</p><h2>財務設定</h2><p class="muted">所有起始資產皆代表 2026 年 12 月 31 日月底金額。</p></div><button id="saveSettingsTop" class="primary-small">儲存</button></div>
-      <section class="card settings-section"><h3>2026 年底資產</h3><div class="form-grid">
-        <label>現金<input id="startCashInput" type="number" min="0" step="1000"></label>
-        <label>投資資產<input id="startInvestmentInput" type="number" min="0" step="1000"></label>
-        <label>儲蓄險價值<input id="startInsuranceInput" type="number" min="0" step="1000"></label>
-        <label>其他負債<input id="startDebtInput" type="number" min="0" step="1000"></label>
-      </div></section>
-      <section class="card settings-section"><h3>每月固定項目</h3><div class="form-grid">
+    <section class="card section-card">
+      <div class="section-heading"><div><p class="section-kicker">OUTLOOK</p><h2>未來摘要</h2></div></div>
+      <div id="outlookList" class="outlook-list"></div>
+    </section>
+
+    <section id="advisorCard" class="advisor-card">
+      <p class="section-kicker">PLANNING CHECK</p>
+      <h2>規劃提醒</h2>
+      <p id="advisorText"></p>
+    </section>
+  </section>
+
+  <section id="timelinePage" class="page">
+    <section class="card section-card">
+      <div class="section-heading"><div><p class="section-kicker">SCENARIO</p><h2>套用計畫</h2></div></div>
+      <label class="switch-row">
+        <div><strong>買車</strong><span id="carSwitchDescription"></span></div>
+        <input id="carToggle" type="checkbox" class="switch-input"><span class="switch-ui"></span>
+      </label>
+      <label class="switch-row">
+        <div><strong>買房</strong><span id="houseSwitchDescription"></span></div>
+        <input id="houseToggle" type="checkbox" class="switch-input"><span class="switch-ui"></span>
+      </label>
+    </section>
+
+    <section class="hero-card compact-hero">
+      <div class="hero-row">
+        <div><p id="selectedPeriod" class="muted">2027 年 1 月底</p><p class="hero-label">預估淨資產</p></div>
+        <button id="periodBtn" class="text-button">選擇月份</button>
+      </div>
+      <div id="netWorthValue" class="hero-value">NT$ 0</div>
+      <p id="scenarioDelta" class="scenario-delta hidden"></p>
+      <div class="metric-grid">
+        <div class="metric"><span>現金流</span><strong id="cashValue">NT$ 0</strong></div>
+        <div class="metric"><span>台股與 ETF</span><strong id="marketValue">NT$ 0</strong></div>
+        <div class="metric"><span>公司認股</span><strong id="employeeStockValue">NT$ 0</strong></div>
+        <div class="metric"><span>儲蓄險</span><strong id="insuranceValue">NT$ 0</strong></div>
+      </div>
+    </section>
+
+    <section class="card section-card">
+      <div class="section-heading"><div><p class="section-kicker">YEAR VIEW</p><h2>每月資產</h2></div><select id="yearSelect" class="compact-select"></select></div>
+      <div id="monthList" class="month-list"></div>
+    </section>
+
+    <section class="card section-card">
+      <div class="section-heading"><div><p class="section-kicker">MONTH DETAIL</p><h2>本月計算</h2></div><button id="toggleDetailBtn" class="text-button">顯示更多</button></div>
+      <div class="summary-list">
+        <div class="summary-row"><span>收入</span><strong id="incomeValue" class="positive">+NT$ 0</strong></div>
+        <div class="summary-row"><span>每月固定支出</span><strong id="monthlyExpenseValue">−NT$ 0</strong></div>
+        <div class="summary-row"><span>年度固定支出分攤</span><strong id="annualExpenseValue">−NT$ 0</strong></div>
+        <div class="summary-row"><span>台股與 ETF 投入</span><strong id="marketContributionValue">−NT$ 0</strong></div>
+        <div class="summary-row"><span>公司認股投入</span><strong id="employeeContributionValue">−NT$ 0</strong></div>
+        <div class="summary-row"><span>美元保單保費</span><strong id="insurancePremiumValue">−NT$ 0</strong></div>
+        <div id="planCostRow" class="summary-row hidden"><span>計畫現金流</span><strong id="planCostValue">−NT$ 0</strong></div>
+      </div>
+      <div id="detailPanel" class="detail-panel hidden">
+        <div class="formula-card"><p class="formula-title">月底淨資產計算</p><p id="formulaText"></p></div>
+        <div id="detailGroups"></div>
+      </div>
+    </section>
+  </section>
+
+  <section id="plansPage" class="page">
+    <div class="settings-header"><div><p class="section-kicker">LIFE PLANS</p><h2>買車與買房</h2><p class="muted">儲存後，到資產頁開啟切換即可比較。</p></div><button id="savePlansTop" class="primary-small">儲存</button></div>
+
+    <section class="card settings-section">
+      <div class="section-heading"><h3>買車計畫</h3><span id="carMonthlyPaymentBadge" class="status-pill"></span></div>
+      <div class="form-grid">
+        <label>車價<input id="carPriceInput" type="number" min="0" step="10000"></label>
+        <label>購買年份<input id="carYearInput" type="number" min="2027" max="2060"></label>
+        <label>購買月份<input id="carMonthInput" type="number" min="1" max="12"></label>
+        <label>頭期款<input id="carDownPaymentInput" type="number" min="0" step="10000"></label>
+        <label>貸款年限<input id="carLoanYearsInput" type="number" min="1" max="10"></label>
+        <label>年利率（%）<input id="carLoanRateInput" type="number" min="0" max="20" step="0.01"></label>
+        <label>每月持有成本<input id="carMonthlyCostInput" type="number" min="0" step="1000"></label>
+        <label>每年折舊率（%）<input id="carDepreciationInput" type="number" min="0" max="100" step="0.1"></label>
+      </div>
+    </section>
+
+    <section class="card settings-section">
+      <div class="section-heading"><h3>買房計畫</h3><span id="houseMonthlyPaymentBadge" class="status-pill"></span></div>
+      <div class="form-grid">
+        <label>房屋總價<input id="housePriceInput" type="number" min="0" step="100000"></label>
+        <label>購買年份<input id="houseYearInput" type="number" min="2027" max="2060"></label>
+        <label>購買月份<input id="houseMonthInput" type="number" min="1" max="12"></label>
+        <label>頭期款<input id="houseDownPaymentInput" type="number" min="0" step="100000"></label>
+        <label>房貸年限<input id="houseLoanYearsInput" type="number" min="1" max="40"></label>
+        <label>房貸年利率（%）<input id="houseLoanRateInput" type="number" min="0" max="20" step="0.01"></label>
+        <label>裝潢與交易費<input id="houseClosingCostInput" type="number" min="0" step="10000"></label>
+        <label>每月持有成本<input id="houseMonthlyCostInput" type="number" min="0" step="1000"></label>
+        <label>原本每月房租<input id="houseRentOffsetInput" type="number" min="0" step="1000"></label>
+        <label>房屋年增值率（%）<input id="houseAppreciationInput" type="number" min="-20" max="30" step="0.1"></label>
+      </div>
+
+      <div class="subsection">
+        <h3>頭期款與交易費來源</h3>
+        <p class="helper">系統會依下列順序扣除。未勾選的資產不會被動用；美元保單會依設定匯率換算。</p>
+        <label class="check-row"><input id="fundCashInput" type="checkbox">現金流</label>
+        <label class="check-row"><input id="fundMarketInput" type="checkbox">台股與 ETF</label>
+        <label class="check-row"><input id="fundEmployeeInput" type="checkbox">公司認股</label>
+        <label class="check-row"><input id="fundInsuranceInput" type="checkbox">美元儲蓄險</label>
+      </div>
+    </section>
+    <button id="savePlansBottom" class="primary-button">儲存計畫</button>
+  </section>
+
+  <section id="settingsPage" class="page">
+    <div class="settings-header"><div><p class="section-kicker">FINANCIAL INPUTS</p><h2>財務設定</h2><p class="muted">起始資產代表 2026 年 12 月 31 日月底金額；2027 年 1 月開始推算。</p></div><button id="saveSettingsTop" class="primary-small">儲存</button></div>
+
+    <section class="card settings-section">
+      <h3>2026 年底資產</h3>
+      <div class="form-grid">
+        <label>現金流（TWD）<input id="startCashInput" type="number" min="0" step="1000"></label>
+        <label>台股與 ETF（TWD）<input id="startMarketInput" type="number" min="0" step="1000"></label>
+        <label>公司認股（TWD）<input id="startEmployeeStockInput" type="number" min="0" step="1000"></label>
+        <label>儲蓄險價值（USD）<input id="startInsuranceUsdInput" type="number" min="0" step="100"></label>
+        <label>美元兌台幣匯率<input id="usdRateInput" type="number" min="1" max="100" step="0.01"></label>
+        <label>其他負債（TWD）<input id="startDebtInput" type="number" min="0" step="1000"></label>
+      </div>
+      <p id="insuranceTwdPreview" class="helper"></p>
+    </section>
+
+    <section class="card settings-section">
+      <h3>每月固定項目</h3>
+      <div class="form-grid">
         <label>每月薪資<input id="salaryInput" type="number" min="0" step="1000"></label>
         <label>每月固定支出<input id="fixedExpenseInput" type="number" min="0" step="1000"></label>
-        <label>每月投資<input id="monthlyInvestmentInput" type="number" min="0" step="1000"></label>
-        <label>投資年化報酬率（%）<input id="returnRateInput" type="number" min="-50" max="100" step="0.1"></label>
-        <label>每月儲蓄險保費<input id="insurancePremiumInput" type="number" min="0" step="1000"></label>
-      </div></section>
-      <section class="card settings-section"><h3>年終與分紅</h3><div class="form-grid">
+        <label>每月投入台股與 ETF<input id="monthlyMarketInput" type="number" min="0" step="1000"></label>
+        <label>台股與 ETF 年化報酬率（%）<input id="marketReturnInput" type="number" min="-50" max="100" step="0.1"></label>
+        <label>每月公司認股投入<input id="monthlyEmployeeInput" type="number" min="0" step="1000"></label>
+        <label>公司認股年化報酬率（%）<input id="employeeReturnInput" type="number" min="-50" max="100" step="0.1"></label>
+        <label>每月美元保單保費（USD）<input id="insurancePremiumUsdInput" type="number" min="0" step="10"></label>
+        <label>美元保單年化增值率（%）<input id="insuranceReturnInput" type="number" min="-20" max="30" step="0.1"></label>
+      </div>
+    </section>
+
+    <section class="card settings-section">
+      <div class="section-heading"><div><h3>每年固定支出</h3><p class="helper">年度總額平均分攤到每個月底。</p></div><button id="addAnnualItemBtn" class="secondary-button">新增</button></div>
+      <div id="annualItemsList" class="item-list"></div>
+      <div class="total-row"><span>年度合計</span><strong id="annualTotalValue">NT$ 0</strong></div>
+      <div class="total-row"><span>每月分攤</span><strong id="annualMonthlyValue">NT$ 0</strong></div>
+    </section>
+
+    <section class="card settings-section">
+      <h3>年終與兩次分紅</h3>
+      <div class="form-grid">
         <label>年終月數<input id="bonusMonthsInput" type="number" min="0" step="0.1"></label>
         <label>年終發放月份<input id="bonusMonthInput" type="number" min="1" max="12"></label>
         <label>第一次分紅<input id="profitShare1Input" type="number" min="0" step="1000"></label>
         <label>第一次分紅月份<input id="profitShare1MonthInput" type="number" min="1" max="12"></label>
         <label>第二次分紅<input id="profitShare2Input" type="number" min="0" step="1000"></label>
         <label>第二次分紅月份<input id="profitShare2MonthInput" type="number" min="1" max="12"></label>
-      </div><p class="helper">薪資、年終與兩次分紅皆視為指定月份月底入帳；畫面顯示的資產也統一為月底金額。</p></section>
-      <button id="saveSettingsBottom" class="primary-button">儲存並重新計算</button>
+      </div>
+      <p class="helper">薪資、年終與分紅均視為指定月份月底入帳，資產畫面亦顯示月底餘額。</p>
     </section>
+    <button id="saveSettingsBottom" class="primary-button">儲存並重新計算</button>
+  </section>
+</main>
 
-    <section id="plansPage" class="page">
-      <div class="settings-header"><div><p class="section-kicker">LIFE PLANS</p><h2>買車與買房</h2><p class="muted">計畫只在資產頁開啟切換後才會套用。</p></div></div>
-      <section class="card settings-section"><div class="section-heading"><h3>買車計畫</h3><span id="carMonthlyPaymentBadge" class="status-pill"></span></div><div class="form-grid">
-        <label>車價<input id="carPriceInput" type="number" min="0" step="10000"></label><label>購買年份<input id="carYearInput" type="number" min="2027" max="2060"></label>
-        <label>購買月份<input id="carMonthInput" type="number" min="1" max="12"></label><label>頭期款<input id="carDownPaymentInput" type="number" min="0" step="10000"></label>
-        <label>貸款年限<input id="carLoanYearsInput" type="number" min="1" max="10"></label><label>年利率（%）<input id="carLoanRateInput" type="number" min="0" max="20" step="0.01"></label>
-        <label>每月持有成本<input id="carMonthlyCostInput" type="number" min="0" step="1000"></label><label>每年折舊率（%）<input id="carDepreciationInput" type="number" min="0" max="100" step="0.1"></label>
-      </div></section>
-      <section class="card settings-section"><div class="section-heading"><h3>買房計畫</h3><span id="houseMonthlyPaymentBadge" class="status-pill"></span></div><div class="form-grid">
-        <label>房屋總價<input id="housePriceInput" type="number" min="0" step="100000"></label><label>購買年份<input id="houseYearInput" type="number" min="2027" max="2060"></label>
-        <label>購買月份<input id="houseMonthInput" type="number" min="1" max="12"></label><label>頭期款<input id="houseDownPaymentInput" type="number" min="0" step="100000"></label>
-        <label>房貸年限<input id="houseLoanYearsInput" type="number" min="1" max="40"></label><label>房貸年利率（%）<input id="houseLoanRateInput" type="number" min="0" max="20" step="0.01"></label>
-        <label>裝潢與交易費<input id="houseClosingCostInput" type="number" min="0" step="10000"></label><label>每月持有成本<input id="houseMonthlyCostInput" type="number" min="0" step="1000"></label>
-        <label>原本每月房租<input id="houseRentOffsetInput" type="number" min="0" step="1000"></label><label>房屋年增值率（%）<input id="houseAppreciationInput" type="number" min="-20" max="30" step="0.1"></label>
-      </div></section>
-      <button id="savePlansBtn" class="primary-button">儲存計畫</button>
-    </section>
-  </main>
+<nav class="bottom-nav" aria-label="主要分頁">
+  <button class="nav-item active" data-page="overviewPage">總覽</button>
+  <button class="nav-item" data-page="timelinePage">資產</button>
+  <button class="nav-item" data-page="plansPage">計畫</button>
+  <button class="nav-item" data-page="settingsPage">設定</button>
+</nav>
 
-  <nav class="bottom-nav" aria-label="主要分頁">
-    <button class="nav-item active" data-page="overviewPage"><span>總覽</span></button>
-    <button class="nav-item" data-page="timelinePage"><span>資產</span></button>
-    <button class="nav-item" data-page="plansPage"><span>計畫</span></button>
-    <button class="nav-item" data-page="settingsPage"><span>設定</span></button>
-  </nav>
+<dialog id="periodDialog" class="modal">
+  <form method="dialog" class="modal-card">
+    <div class="section-heading"><h2>選擇月份</h2><button value="cancel" class="text-button">關閉</button></div>
+    <label>年份<select id="periodYearInput"></select></label>
+    <label>月份<select id="periodMonthInput"></select></label>
+    <button id="applyPeriodBtn" value="default" class="primary-button">套用</button>
+  </form>
+</dialog>
 
-  <dialog id="periodDialog" class="modal"><form method="dialog" class="modal-card"><div class="section-heading"><h2>選擇月份</h2><button value="cancel" class="text-button">關閉</button></div><label>年份<select id="periodYearInput"></select></label><label>月份<select id="periodMonthInput"></select></label><button id="applyPeriodBtn" value="default" class="primary-button">套用</button></form></dialog>
-  <script src="./app.js"></script>
+<script src="./app.js"></script>
 </body>
 </html>
