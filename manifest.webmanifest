@@ -1,0 +1,10 @@
+{
+  "name": "Future Ledger",
+  "short_name": "Ledger",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f6f6f3",
+  "theme_color": "#f6f6f3",
+  "lang": "zh-Hant-TW",
+  "icons": []
+}

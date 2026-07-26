@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#f7f7f5" />
+  <title>Future Ledger</title>
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <main class="app-shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">PERSONAL FINANCE</p>
+        <h1>Future Ledger</h1>
+      </div>
+      <button id="settingsBtn" class="icon-button" aria-label="開啟設定">設定</button>
+    </header>
+
+    <section class="scenario-strip" aria-label="情境切換">
+      <button class="scenario-chip active" data-scenario="base">基準</button>
+      <button class="scenario-chip" data-scenario="car">買車</button>
+      <button class="scenario-chip" data-scenario="house">買房</button>
+      <button class="scenario-chip" data-scenario="both">車＋房</button>
+    </section>
+
+    <section class="hero-card">
+      <div class="hero-heading">
+        <div>
+          <p id="selectedPeriod" class="muted">2026 年 7 月</p>
+          <p class="hero-label">預估淨資產</p>
+        </div>
+        <button id="periodBtn" class="ghost-button">選擇月份</button>
+      </div>
+      <div id="netWorthValue" class="hero-value">NT$ 0</div>
+      <div id="scenarioDelta" class="delta neutral">與基準相同</div>
+      <div class="mini-grid">
+        <div>
+          <span>可動用現金</span>
+          <strong id="cashValue">NT$ 0</strong>
+        </div>
+        <div>
+          <span>投資資產</span>
+          <strong id="investmentValue">NT$ 0</strong>
+        </div>
+        <div>
+          <span>保單價值</span>
+          <strong id="insuranceValue">NT$ 0</strong>
+        </div>
+        <div>
+          <span>總負債</span>
+          <strong id="debtValue">NT$ 0</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-block">
+      <div class="section-heading">
+        <div>
+          <p class="section-kicker">ASSET TREND</p>
+          <h2>未來資產</h2>
+        </div>
+        <select id="yearSelect" class="compact-select" aria-label="選擇年份"></select>
+      </div>
+      <div id="monthTimeline" class="month-timeline"></div>
+    </section>
+
+    <section class="section-block">
+      <div class="section-heading">
+        <div>
+          <p class="section-kicker">MONTH SUMMARY</p>
+          <h2>本月變化</h2>
+        </div>
+        <button id="toggleDetailBtn" class="ghost-button" aria-expanded="false">顯示更多</button>
+      </div>
+
+      <div class="summary-list">
+        <div class="summary-row">
+          <span>收入</span>
+          <strong id="incomeValue" class="positive">+NT$ 0</strong>
+        </div>
+        <div class="summary-row">
+          <span>生活與固定支出</span>
+          <strong id="expenseValue">−NT$ 0</strong>
+        </div>
+        <div class="summary-row">
+          <span>投資投入</span>
+          <strong id="investContributionValue">−NT$ 0</strong>
+        </div>
+        <div class="summary-row">
+          <span>投資損益</span>
+          <strong id="investmentReturnValue">+NT$ 0</strong>
+        </div>
+        <div class="summary-row scenario-only hidden" id="scenarioPaymentRow">
+          <span id="scenarioPaymentLabel">方案支出</span>
+          <strong id="scenarioPaymentValue">−NT$ 0</strong>
+        </div>
+      </div>
+
+      <div id="detailPanel" class="detail-panel hidden">
+        <div class="formula-card">
+          <p class="formula-title">淨資產計算</p>
+          <p id="formulaText" class="formula-text"></p>
+        </div>
+        <div id="detailGroups"></div>
+      </div>
+    </section>
+
+    <section class="section-block">
+      <div class="section-heading">
+        <div>
+          <p class="section-kicker">PLANS</p>
+          <h2>重大計畫</h2>
+        </div>
+      </div>
+      <div class="plan-grid">
+        <article class="plan-card">
+          <div>
+            <span class="plan-badge">CAR</span>
+            <h3 id="carPlanTitle">買車方案</h3>
+            <p id="carPlanText" class="muted"></p>
+          </div>
+          <button class="secondary-button" data-edit-plan="car">編輯</button>
+        </article>
+        <article class="plan-card">
+          <div>
+            <span class="plan-badge">HOME</span>
+            <h3 id="housePlanTitle">買房方案</h3>
+            <p id="housePlanText" class="muted"></p>
+          </div>
+          <button class="secondary-button" data-edit-plan="house">編輯</button>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="periodDialog" class="modal">
+    <form method="dialog" class="modal-card">
+      <div class="modal-heading">
+        <h2>選擇月份</h2>
+        <button value="cancel" class="icon-button">關閉</button>
+      </div>
+      <label>年份<select id="periodYearInput"></select></label>
+      <label>月份<select id="periodMonthInput"></select></label>
+      <button id="applyPeriodBtn" value="default" class="primary-button">套用</button>
+    </form>
+  </dialog>
+
+  <dialog id="settingsDialog" class="modal">
+    <form method="dialog" class="modal-card modal-wide">
+      <div class="modal-heading">
+        <div>
+          <p class="section-kicker">FINANCIAL INPUTS</p>
+          <h2>基礎財務設定</h2>
+        </div>
+        <button value="cancel" class="icon-button">關閉</button>
+      </div>
+      <div class="form-grid">
+        <label>起始現金<input id="startCashInput" type="number" min="0" step="1000" /></label>
+        <label>起始投資資產<input id="startInvestmentInput" type="number" min="0" step="1000" /></label>
+        <label>起始儲蓄險價值<input id="startInsuranceInput" type="number" min="0" step="1000" /></label>
+        <label>每月薪資<input id="salaryInput" type="number" min="0" step="1000" /></label>
+        <label>每月固定支出<input id="fixedExpenseInput" type="number" min="0" step="1000" /></label>
+        <label>每月投資<input id="monthlyInvestmentInput" type="number" min="0" step="1000" /></label>
+        <label>投資年化報酬率（%）<input id="returnRateInput" type="number" min="-50" max="100" step="0.1" /></label>
+        <label>每月儲蓄險保費<input id="insurancePremiumInput" type="number" min="0" step="1000" /></label>
+        <label>年終月數<input id="bonusMonthsInput" type="number" min="0" step="0.1" /></label>
+        <label>年終入帳月份<input id="bonusMonthInput" type="number" min="1" max="12" /></label>
+        <label>年度分紅<input id="profitShareInput" type="number" min="0" step="1000" /></label>
+        <label>分紅入帳月份<input id="profitShareMonthInput" type="number" min="1" max="12" /></label>
+      </div>
+      <button id="saveSettingsBtn" value="default" class="primary-button">儲存並重新計算</button>
+    </form>
+  </dialog>
+
+  <dialog id="planDialog" class="modal">
+    <form method="dialog" class="modal-card modal-wide">
+      <div class="modal-heading">
+        <div>
+          <p class="section-kicker">SCENARIO PLAN</p>
+          <h2 id="planDialogTitle">方案設定</h2>
+        </div>
+        <button value="cancel" class="icon-button">關閉</button>
+      </div>
+      <input id="planTypeInput" type="hidden" />
+      <div id="carFields" class="form-grid">
+        <label>車價<input id="carPriceInput" type="number" min="0" step="10000" /></label>
+        <label>購買年份<input id="carYearInput" type="number" min="2026" max="2060" /></label>
+        <label>購買月份<input id="carMonthInput" type="number" min="1" max="12" /></label>
+        <label>頭期款<input id="carDownPaymentInput" type="number" min="0" step="10000" /></label>
+        <label>貸款年限<input id="carLoanYearsInput" type="number" min="1" max="10" /></label>
+        <label>貸款年利率（%）<input id="carLoanRateInput" type="number" min="0" max="20" step="0.01" /></label>
+        <label>每月持有成本<input id="carMonthlyCostInput" type="number" min="0" step="1000" /></label>
+        <label>每年折舊率（%）<input id="carDepreciationInput" type="number" min="0" max="100" step="0.1" /></label>
+      </div>
+      <div id="houseFields" class="form-grid hidden">
+        <label>房屋總價<input id="housePriceInput" type="number" min="0" step="100000" /></label>
+        <label>購買年份<input id="houseYearInput" type="number" min="2026" max="2060" /></label>
+        <label>購買月份<input id="houseMonthInput" type="number" min="1" max="12" /></label>
+        <label>頭期款<input id="houseDownPaymentInput" type="number" min="0" step="100000" /></label>
+        <label>房貸年限<input id="houseLoanYearsInput" type="number" min="1" max="40" /></label>
+        <label>房貸年利率（%）<input id="houseLoanRateInput" type="number" min="0" max="20" step="0.01" /></label>
+        <label>裝潢與交易費<input id="houseClosingCostInput" type="number" min="0" step="10000" /></label>
+        <label>每月持有成本<input id="houseMonthlyCostInput" type="number" min="0" step="1000" /></label>
+        <label>原本每月房租<input id="houseRentOffsetInput" type="number" min="0" step="1000" /></label>
+        <label>房屋年增值率（%）<input id="houseAppreciationInput" type="number" min="-20" max="30" step="0.1" /></label>
+      </div>
+      <button id="savePlanBtn" value="default" class="primary-button">儲存方案</button>
+    </form>
+  </dialog>
+
+  <script src="./app.js"></script>
+</body>
+</html>
