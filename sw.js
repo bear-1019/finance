@@ -1,9 +1,1 @@
-
-const CACHE = "future-ledger-v1";
-const ASSETS = ["./","./index.html","./styles.css","./app.js","./manifest.webmanifest"];
-self.addEventListener("install", event => {
-  event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS)));
-});
-self.addEventListener("fetch", event => {
-  event.respondWith(caches.match(event.request).then(hit => hit || fetch(event.request)));
-});
+const C='future-ledger-v2';self.addEventListener('install',e=>e.waitUntil(caches.open(C).then(c=>c.addAll(['./','./index.html','./styles.css','./app.js','./manifest.webmanifest']))));self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request))));
