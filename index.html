@@ -27,7 +27,8 @@
       </div>
       <div id="overviewNetWorth" class="hero-value">NT$ 0</div>
       <div class="metric-grid">
-        <div class="metric"><span>現金流</span><strong id="overviewCash">NT$ 0</strong></div>
+        <div class="metric"><span>可直接動用</span><strong id="overviewCash">NT$ 0</strong></div>
+        <div class="metric"><span>暫不可動用</span><strong id="overviewLockedCash">NT$ 0</strong></div>
         <div class="metric"><span>台股與 ETF</span><strong id="overviewMarket">NT$ 0</strong></div>
         <div class="metric"><span>公司認股</span><strong id="overviewEmployeeStock">NT$ 0</strong></div>
         <div class="metric"><span>儲蓄險</span><strong id="overviewInsurance">NT$ 0</strong></div>
@@ -75,7 +76,8 @@
       <div id="netWorthValue" class="hero-value">NT$ 0</div>
       <p id="scenarioDelta" class="scenario-delta hidden"></p>
       <div class="metric-grid">
-        <div class="metric"><span>現金流</span><strong id="cashValue">NT$ 0</strong></div>
+        <div class="metric"><span>可直接動用</span><strong id="cashValue">NT$ 0</strong></div>
+        <div class="metric"><span>暫不可動用</span><strong id="lockedCashValue">NT$ 0</strong></div>
         <div class="metric"><span>台股與 ETF</span><strong id="marketValue">NT$ 0</strong></div>
         <div class="metric"><span>公司認股</span><strong id="employeeStockValue">NT$ 0</strong></div>
         <div class="metric"><span>儲蓄險</span><strong id="insuranceValue">NT$ 0</strong></div>
@@ -137,7 +139,7 @@
       <div class="subsection">
         <h3>頭期款與交易費來源</h3>
         <p class="helper">系統會依下列順序扣除。未勾選的資產不會被動用；美元保單會依設定匯率換算。</p>
-        <label class="check-row"><input id="fundCashInput" type="checkbox">現金流</label>
+        <label class="check-row"><input id="fundCashInput" type="checkbox">可直接動用現金</label>
         <label class="check-row"><input id="fundMarketInput" type="checkbox">台股與 ETF</label>
         <label class="check-row"><input id="fundEmployeeInput" type="checkbox">公司認股</label>
         <label class="check-row"><input id="fundInsuranceInput" type="checkbox">美元儲蓄險</label>
@@ -152,13 +154,17 @@
     <section class="card settings-section">
       <h3>2026 年底資產</h3>
       <div class="form-grid">
-        <label>現金流（TWD）<input id="startCashInput" type="number" min="0" step="1000"></label>
+        <label>可直接動用現金（TWD）<input id="startCashInput" type="number" min="0" step="1000"></label>
+        <label>暫不可動用現金（TWD）<input id="startLockedCashInput" type="number" min="0" step="1000"></label>
+        <label>可動用年份<select id="lockedCashYearInput"></select></label>
+        <label>可動用月份<select id="lockedCashMonthInput"></select></label>
         <label>台股與 ETF（TWD）<input id="startMarketInput" type="number" min="0" step="1000"></label>
         <label>公司認股（TWD）<input id="startEmployeeStockInput" type="number" min="0" step="1000"></label>
         <label>儲蓄險價值（USD）<input id="startInsuranceUsdInput" type="number" min="0" step="100"></label>
         <label>美元兌台幣匯率<input id="usdRateInput" type="number" min="1" max="100" step="0.01"></label>
         <label>其他負債（TWD）<input id="startDebtInput" type="number" min="0" step="1000"></label>
       </div>
+      <p id="lockedCashPreview" class="helper"></p>
       <p id="insuranceTwdPreview" class="helper"></p>
     </section>
 

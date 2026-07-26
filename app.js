@@ -1,9 +1,9 @@
 
-const STORAGE_KEY="future-ledger-v3-1";
+const STORAGE_KEY="future-ledger-v3-2";
 const START_YEAR=2027, END_YEAR=2045;
 const defaults={
  settings:{
-  startCash:650000,startMarket:480000,startEmployeeStock:180000,startInsuranceUsd:10000,usdRate:31.8,startDebt:0,
+  startCash:500000,startLockedCash:150000,lockedCashYear:2028,lockedCashMonth:1,startMarket:480000,startEmployeeStock:180000,startInsuranceUsd:10000,usdRate:31.8,startDebt:0,
   salary:62000,fixedExpense:28000,monthlyMarket:18000,marketReturn:6,monthlyEmployee:5000,employeeReturn:5,
   insurancePremiumUsd:120,insuranceReturn:2,bonusMonths:1.5,bonusMonth:1,
   profitShare1:100000,profitShare1Month:4,profitShare2:100000,profitShare2Month:10,
@@ -42,14 +42,20 @@ function drawFromSources(state,need,sources){
 
 function calculate(carEnabled,houseEnabled){
  const s=data.settings;
- let cash=s.startCash,market=s.startMarket,employee=s.startEmployeeStock,insuranceUsd=s.startInsuranceUsd;
+ let cash=s.startCash,lockedCash=s.startLockedCash,market=s.startMarket,employee=s.startEmployeeStock,insuranceUsd=s.startInsuranceUsd;
  let carValue=0,carDebt=0,houseValue=0,houseDebt=0;
  const rows=[], monthlyAnnualExpense=annualMonthly();
  const carPrincipal=Math.max(0,data.car.price-data.car.downPayment),carMonths=data.car.loanYears*12,carPay=pmt(carPrincipal,data.car.annualRate,carMonths),carStart=idx(data.car.year,data.car.month);
  const housePrincipal=Math.max(0,data.house.price-data.house.downPayment),houseMonths=data.house.loanYears*12,housePay=pmt(housePrincipal,data.house.annualRate,houseMonths),houseStart=idx(data.house.year,data.house.month);
  for(let year=START_YEAR;year<=END_YEAR;year++)for(let month=1;month<=12;month++){
   const mi=idx(year,month), insuranceTwd=insuranceUsd*s.usdRate;
-  const start={cash,market,employee,insuranceUsd,insuranceTwd,carValue,carDebt,houseValue,houseDebt};
+  const start={cash,lockedCash,market,employee,insuranceUsd,insuranceTwd,carValue,carDebt,houseValue,houseDebt};
+  let unlockedCash=0;
+  if(year===+s.lockedCashYear && month===+s.lockedCashMonth && lockedCash>0){
+   unlockedCash=lockedCash;
+   cash+=lockedCash;
+   lockedCash=0;
+  }
   const incomeItems=[{label:"月薪",value:s.salary}];
   if(month===+s.bonusMonth)incomeItems.push({label:"年終獎金",value:s.salary*s.bonusMonths});
   if(month===+s.profitShare1Month)incomeItems.push({label:"第一次分紅",value:s.profitShare1});
@@ -90,13 +96,13 @@ function calculate(carEnabled,houseEnabled){
   }
 
   const insuranceValue=insuranceUsd*s.usdRate;
-  const assets=cash+market+employee+insuranceValue+carValue+houseValue;
+  const assets=cash+lockedCash+market+employee+insuranceValue+carValue+houseValue;
   const debts=s.startDebt+carDebt+houseDebt;
   const netWorth=assets-debts;
   rows.push({year,month,income,incomeItems,monthlyExpense:s.fixedExpense,annualExpense:monthlyAnnualExpense,
    marketContribution:s.monthlyMarket,employeeContribution:s.monthlyEmployee,insurancePremiumTwd:s.insurancePremiumUsd*s.usdRate,
    marketReturn,employeeReturn,insuranceReturnTwd:insuranceReturnUsd*s.usdRate,planCashFlow,planItems,fundingWarning,
-   cash,market,employee,insuranceUsd,insuranceValue,carValue,carDebt,houseValue,houseDebt,assets,debts,netWorth,start});
+   cash,lockedCash,unlockedCash,market,employee,insuranceUsd,insuranceValue,carValue,carDebt,houseValue,houseDebt,assets,debts,netWorth,start});
  }
  return rows;
 }
@@ -106,12 +112,13 @@ function recalc(){
  renderAll();
 }
 function rowFor(key=currentKey()){return results[key].find(r=>r.year===+selectedYear&&r.month===+selectedMonth)}
-function baseStartNet(){const s=data.settings;return s.startCash+s.startMarket+s.startEmployeeStock+s.startInsuranceUsd*s.usdRate-s.startDebt}
+function baseStartNet(){const s=data.settings;return s.startCash+s.startLockedCash+s.startMarket+s.startEmployeeStock+s.startInsuranceUsd*s.usdRate-s.startDebt}
 
 function renderAll(){renderOverview();renderTimeline();renderPlans();renderSettings()}
 function renderOverview(){
  const s=data.settings;
  document.getElementById("overviewCash").textContent=money(s.startCash);
+ document.getElementById("overviewLockedCash").textContent=money(s.startLockedCash);
  document.getElementById("overviewMarket").textContent=money(s.startMarket);
  document.getElementById("overviewEmployeeStock").textContent=money(s.startEmployeeStock);
  document.getElementById("overviewInsurance").textContent=money(s.startInsuranceUsd*s.usdRate);
@@ -123,7 +130,7 @@ function renderOverview(){
  const years=[2027,2030,2035,2040].filter(y=>y<=END_YEAR);
  document.getElementById("outlookList").innerHTML=years.map(y=>{const r=results.base.find(x=>x.year===y&&x.month===12);return `<div class="outlook-row"><span>${y} 年底</span><strong>${money(r.netWorth)}</strong></div>`}).join("");
  const homeRow=results.house.find(x=>x.year===data.house.year&&x.month===data.house.month);
- let text=`依目前基準規劃，${data.house.year} 年 ${data.house.month} 月套用買房計畫後，月底現金流預估為 ${money(homeRow.cash)}。`;
+ let text=`依目前基準規劃，${data.house.year} 年 ${data.house.month} 月套用買房計畫後，月底可直接動用現金預估為 ${money(homeRow.cash)}。`;
  if(homeRow.fundingWarning||homeRow.cash<0)text+=" 目前設定的可動用資產不足，系統會以負現金顯示缺口，建議延後購屋或調整頭期款來源。";
  else text+=` 仍可保留 ${money(Math.max(0,homeRow.cash))} 現金流。`;
  document.getElementById("advisorText").textContent=text;
@@ -133,6 +140,7 @@ function renderTimeline(){
  document.getElementById("selectedPeriod").textContent=`${selectedYear} 年 ${selectedMonth} 月底`;
  document.getElementById("netWorthValue").textContent=money(r.netWorth);
  document.getElementById("cashValue").textContent=money(r.cash);
+ document.getElementById("lockedCashValue").textContent=money(r.lockedCash);
  document.getElementById("marketValue").textContent=money(r.market);
  document.getElementById("employeeStockValue").textContent=money(r.employee);
  document.getElementById("insuranceValue").textContent=money(r.insuranceValue);
@@ -157,10 +165,11 @@ function renderMonths(){
  document.querySelectorAll(".month-button").forEach(b=>b.onclick=()=>{selectedMonth=+b.dataset.month;renderTimeline()});
 }
 function renderDetails(r){
- const startNet=r.start.cash+r.start.market+r.start.employee+r.start.insuranceTwd+r.start.carValue+r.start.houseValue-r.start.carDebt-r.start.houseDebt-data.settings.startDebt;
+ const startNet=r.start.cash+r.start.lockedCash+r.start.market+r.start.employee+r.start.insuranceTwd+r.start.carValue+r.start.houseValue-r.start.carDebt-r.start.houseDebt-data.settings.startDebt;
  document.getElementById("formulaText").textContent=`${money(startNet)} ＋ 本月淨變化 ${signed(r.netWorth-startNet)} ＝ ${money(r.netWorth)}`;
  const groups=[
   ["收入明細",r.incomeItems],
+  ...(r.unlockedCash?[["資金解鎖",[{label:"暫不可動用轉為可直接動用",value:r.unlockedCash}]]]:[]),
   ["每月資金配置",[
    {label:"每月固定支出",value:-r.monthlyExpense},{label:"年度固定支出分攤",value:-r.annualExpense},
    {label:"台股與 ETF 投入",value:-r.marketContribution},{label:"公司認股投入",value:-r.employeeContribution},
@@ -171,7 +180,7 @@ function renderDetails(r){
   ]],
   ...(r.planItems.length?[["計畫與資金來源",r.planItems.map(x=>({label:x.label,value:-x.value}))]]:[]),
   ["月底資產與負債",[
-   {label:"現金流",value:r.cash},{label:"台股與 ETF",value:r.market},{label:"公司認股",value:r.employee},
+   {label:"可直接動用現金",value:r.cash},{label:"暫不可動用現金",value:r.lockedCash},{label:"台股與 ETF",value:r.market},{label:"公司認股",value:r.employee},
    {label:`儲蓄險 ${r.insuranceUsd.toFixed(2)} USD`,value:r.insuranceValue},
    ...(r.carValue?[{label:"車輛價值",value:r.carValue},{label:"車貸餘額",value:-r.carDebt}]:[]),
    ...(r.houseValue?[{label:"房屋價值",value:r.houseValue},{label:"房貸餘額",value:-r.houseDebt}]:[]),
@@ -189,6 +198,7 @@ function renderPlans(){
  document.getElementById("houseMonthlyPaymentBadge").textContent=`月付 ${money(hp)}`;
 }
 function renderSettings(){
+ document.getElementById("lockedCashPreview").textContent=`暫不可動用現金將於 ${data.settings.lockedCashYear} 年 ${data.settings.lockedCashMonth} 月底轉入可直接動用現金。`;
  document.getElementById("insuranceTwdPreview").textContent=`目前儲蓄險換算價值：約 ${money(data.settings.startInsuranceUsd*data.settings.usdRate)}`;
  const total=(data.settings.annualItems||[]).reduce((a,b)=>a+(+b.amount||0),0);
  document.getElementById("annualTotalValue").textContent=money(total);
@@ -205,7 +215,7 @@ function renderAnnualItems(){
 function escapeHtml(s){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
 
 const settingMap={
- startCashInput:"startCash",startMarketInput:"startMarket",startEmployeeStockInput:"startEmployeeStock",startInsuranceUsdInput:"startInsuranceUsd",usdRateInput:"usdRate",startDebtInput:"startDebt",
+ startCashInput:"startCash",startLockedCashInput:"startLockedCash",lockedCashYearInput:"lockedCashYear",lockedCashMonthInput:"lockedCashMonth",startMarketInput:"startMarket",startEmployeeStockInput:"startEmployeeStock",startInsuranceUsdInput:"startInsuranceUsd",usdRateInput:"usdRate",startDebtInput:"startDebt",
  salaryInput:"salary",fixedExpenseInput:"fixedExpense",monthlyMarketInput:"monthlyMarket",marketReturnInput:"marketReturn",monthlyEmployeeInput:"monthlyEmployee",employeeReturnInput:"employeeReturn",
  insurancePremiumUsdInput:"insurancePremiumUsd",insuranceReturnInput:"insuranceReturn",bonusMonthsInput:"bonusMonths",bonusMonthInput:"bonusMonth",
  profitShare1Input:"profitShare1",profitShare1MonthInput:"profitShare1Month",profitShare2Input:"profitShare2",profitShare2MonthInput:"profitShare2Month"
@@ -246,6 +256,9 @@ document.addEventListener("DOMContentLoaded",()=>{
  document.getElementById("houseYearInput").innerHTML=planYears.map(y=>`<option value="${y}">${y} 年</option>`).join("");
  document.getElementById("carMonthInput").innerHTML=planMonths.map(m=>`<option value="${m}">${m} 月</option>`).join("");
  document.getElementById("houseMonthInput").innerHTML=planMonths.map(m=>`<option value="${m}">${m} 月</option>`).join("");
+ const unlockYears=Array.from({length:2060-2027+1},(_,i)=>2027+i);
+ document.getElementById("lockedCashYearInput").innerHTML=unlockYears.map(y=>`<option value="${y}">${y} 年</option>`).join("");
+ document.getElementById("lockedCashMonthInput").innerHTML=planMonths.map(m=>`<option value="${m}">${m} 月底</option>`).join("");
  fillForms();recalc();
 
  document.querySelectorAll(".nav-item").forEach(b=>b.onclick=()=>goPage(b.dataset.page));
@@ -266,5 +279,8 @@ document.addEventListener("DOMContentLoaded",()=>{
  document.getElementById("savePlansBottom").onclick=savePlansHandler;
  document.getElementById("usdRateInput").oninput=()=>{const usd=+document.getElementById("startInsuranceUsdInput").value||0,rate=+document.getElementById("usdRateInput").value||0;document.getElementById("insuranceTwdPreview").textContent=`目前儲蓄險換算價值：約 ${money(usd*rate)}`};
  document.getElementById("startInsuranceUsdInput").oninput=document.getElementById("usdRateInput").oninput;
+ const updateLockedPreview=()=>{document.getElementById("lockedCashPreview").textContent=`暫不可動用現金將於 ${document.getElementById("lockedCashYearInput").value} 年 ${document.getElementById("lockedCashMonthInput").value} 月底轉入可直接動用現金。`};
+ document.getElementById("lockedCashYearInput").onchange=updateLockedPreview;
+ document.getElementById("lockedCashMonthInput").onchange=updateLockedPreview;
  if("serviceWorker"in navigator)navigator.serviceWorker.register("./sw.js");
 });
