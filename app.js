@@ -1,5 +1,5 @@
 
-const STORAGE_KEY="future-ledger-v3";
+const STORAGE_KEY="future-ledger-v3-1";
 const START_YEAR=2027, END_YEAR=2045;
 const defaults={
  settings:{
@@ -9,8 +9,8 @@ const defaults={
   profitShare1:100000,profitShare1Month:4,profitShare2:100000,profitShare2Month:10,
   annualItems:[{name:"年度保險",amount:36000},{name:"旅遊預算",amount:120000}]
  },
- car:{price:1800000,year:2028,month:7,downPayment:500000,loanYears:5,annualRate:2.2,monthlyCost:6500,depreciation:15},
- house:{price:15000000,year:2032,month:7,downPayment:3000000,loanYears:40,annualRate:2.2,closingCost:900000,monthlyCost:6000,rentOffset:15000,appreciation:2,
+ car:{price:1800000,year:2028,month:7,downPayment:500000,loanYears:5,annualRate:2.2,monthlyCost:6500},
+ house:{price:15000000,year:2032,month:7,downPayment:3000000,loanYears:40,annualRate:2.2,closingCost:900000,monthlyCost:6000,
   sources:{cash:true,market:true,employee:false,insurance:false}}
 };
 let data=load();
@@ -72,7 +72,6 @@ function calculate(carEnabled,houseEnabled){
    const elapsed=mi-carStart;
    if(elapsed<carMonths&&carDebt>0){const r=data.car.annualRate/100/12,interest=carDebt*r,principal=Math.min(carDebt,Math.max(0,carPay-interest));carDebt-=principal;cash-=carPay;planCashFlow+=carPay;planItems.push({label:"車貸月付",value:carPay})}
    cash-=data.car.monthlyCost;planCashFlow+=data.car.monthlyCost;planItems.push({label:"車輛持有成本",value:data.car.monthlyCost});
-   carValue*=Math.pow(1-data.car.depreciation/100,1/12);
   }
 
   if(houseEnabled&&mi===houseStart){
@@ -86,10 +85,8 @@ function calculate(carEnabled,houseEnabled){
   if(houseEnabled&&mi>=houseStart){
    const elapsed=mi-houseStart;
    if(elapsed<houseMonths&&houseDebt>0){const r=data.house.annualRate/100/12,interest=houseDebt*r,principal=Math.min(houseDebt,Math.max(0,housePay-interest));houseDebt-=principal;cash-=housePay;planCashFlow+=housePay;planItems.push({label:"房貸月付",value:housePay})}
-   const netHousing=Math.max(0,data.house.monthlyCost-data.house.rentOffset);
-   cash-=netHousing;planCashFlow+=netHousing;
-   planItems.push({label:"房屋持有成本",value:data.house.monthlyCost},{label:"停止租屋節省",value:-data.house.rentOffset});
-   houseValue*=Math.pow(1+data.house.appreciation/100,1/12);
+   cash-=data.house.monthlyCost;planCashFlow+=data.house.monthlyCost;
+   planItems.push({label:"房屋持有成本",value:data.house.monthlyCost});
   }
 
   const insuranceValue=insuranceUsd*s.usdRate;
@@ -213,8 +210,8 @@ const settingMap={
  insurancePremiumUsdInput:"insurancePremiumUsd",insuranceReturnInput:"insuranceReturn",bonusMonthsInput:"bonusMonths",bonusMonthInput:"bonusMonth",
  profitShare1Input:"profitShare1",profitShare1MonthInput:"profitShare1Month",profitShare2Input:"profitShare2",profitShare2MonthInput:"profitShare2Month"
 };
-const carMap={carPriceInput:"price",carYearInput:"year",carMonthInput:"month",carDownPaymentInput:"downPayment",carLoanYearsInput:"loanYears",carLoanRateInput:"annualRate",carMonthlyCostInput:"monthlyCost",carDepreciationInput:"depreciation"};
-const houseMap={housePriceInput:"price",houseYearInput:"year",houseMonthInput:"month",houseDownPaymentInput:"downPayment",houseLoanYearsInput:"loanYears",houseLoanRateInput:"annualRate",houseClosingCostInput:"closingCost",houseMonthlyCostInput:"monthlyCost",houseRentOffsetInput:"rentOffset",houseAppreciationInput:"appreciation"};
+const carMap={carPriceInput:"price",carYearInput:"year",carMonthInput:"month",carDownPaymentInput:"downPayment",carLoanYearsInput:"loanYears",carLoanRateInput:"annualRate",carMonthlyCostInput:"monthlyCost"};
+const houseMap={housePriceInput:"price",houseYearInput:"year",houseMonthInput:"month",houseDownPaymentInput:"downPayment",houseLoanYearsInput:"loanYears",houseLoanRateInput:"annualRate",houseClosingCostInput:"closingCost",houseMonthlyCostInput:"monthlyCost"};
 function fillForms(){
  Object.entries(settingMap).forEach(([id,k])=>document.getElementById(id).value=data.settings[k]);
  Object.entries(carMap).forEach(([id,k])=>document.getElementById(id).value=data.car[k]);
@@ -243,6 +240,12 @@ document.addEventListener("DOMContentLoaded",()=>{
  document.getElementById("yearSelect").innerHTML=years.map(y=>`<option>${y}</option>`).join("");
  document.getElementById("periodYearInput").innerHTML=years.map(y=>`<option>${y}</option>`).join("");
  document.getElementById("periodMonthInput").innerHTML=Array.from({length:12},(_,i)=>`<option value="${i+1}">${i+1} 月</option>`).join("");
+ const planYears=Array.from({length:2060-START_YEAR+1},(_,i)=>START_YEAR+i);
+ const planMonths=Array.from({length:12},(_,i)=>i+1);
+ document.getElementById("carYearInput").innerHTML=planYears.map(y=>`<option value="${y}">${y} 年</option>`).join("");
+ document.getElementById("houseYearInput").innerHTML=planYears.map(y=>`<option value="${y}">${y} 年</option>`).join("");
+ document.getElementById("carMonthInput").innerHTML=planMonths.map(m=>`<option value="${m}">${m} 月</option>`).join("");
+ document.getElementById("houseMonthInput").innerHTML=planMonths.map(m=>`<option value="${m}">${m} 月</option>`).join("");
  fillForms();recalc();
 
  document.querySelectorAll(".nav-item").forEach(b=>b.onclick=()=>goPage(b.dataset.page));

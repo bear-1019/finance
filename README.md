@@ -1,4 +1,4 @@
-# 財務藍圖 Future Ledger V3
+# 財務藍圖 Future Ledger V3.1
 
 可部署於 GitHub Pages 的純前端 PWA。資料只儲存在瀏覽器 localStorage。
 
@@ -16,3 +16,10 @@
 
 ## GitHub Pages
 將此資料夾內容上傳至 Repository 根目錄，再至 Settings → Pages → Deploy from a branch → main / root。
+
+
+## V3.1 調整
+- 買車與買房年月改為下拉選單
+- 移除車輛折舊率
+- 移除原房租與房屋增值率
+- 修正手機標題換行、編輯／儲存按鈕尺寸與安全區域排版

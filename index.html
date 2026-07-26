@@ -112,13 +112,12 @@
       <div class="section-heading"><h3>買車計畫</h3><span id="carMonthlyPaymentBadge" class="status-pill"></span></div>
       <div class="form-grid">
         <label>車價<input id="carPriceInput" type="number" min="0" step="10000"></label>
-        <label>購買年份<input id="carYearInput" type="number" min="2027" max="2060"></label>
-        <label>購買月份<input id="carMonthInput" type="number" min="1" max="12"></label>
+        <label>購買年份<select id="carYearInput"></select></label>
+        <label>購買月份<select id="carMonthInput"></select></label>
         <label>頭期款<input id="carDownPaymentInput" type="number" min="0" step="10000"></label>
         <label>貸款年限<input id="carLoanYearsInput" type="number" min="1" max="10"></label>
         <label>年利率（%）<input id="carLoanRateInput" type="number" min="0" max="20" step="0.01"></label>
         <label>每月持有成本<input id="carMonthlyCostInput" type="number" min="0" step="1000"></label>
-        <label>每年折舊率（%）<input id="carDepreciationInput" type="number" min="0" max="100" step="0.1"></label>
       </div>
     </section>
 
@@ -126,15 +125,13 @@
       <div class="section-heading"><h3>買房計畫</h3><span id="houseMonthlyPaymentBadge" class="status-pill"></span></div>
       <div class="form-grid">
         <label>房屋總價<input id="housePriceInput" type="number" min="0" step="100000"></label>
-        <label>購買年份<input id="houseYearInput" type="number" min="2027" max="2060"></label>
-        <label>購買月份<input id="houseMonthInput" type="number" min="1" max="12"></label>
+        <label>購買年份<select id="houseYearInput"></select></label>
+        <label>購買月份<select id="houseMonthInput"></select></label>
         <label>頭期款<input id="houseDownPaymentInput" type="number" min="0" step="100000"></label>
         <label>房貸年限<input id="houseLoanYearsInput" type="number" min="1" max="40"></label>
         <label>房貸年利率（%）<input id="houseLoanRateInput" type="number" min="0" max="20" step="0.01"></label>
         <label>裝潢與交易費<input id="houseClosingCostInput" type="number" min="0" step="10000"></label>
         <label>每月持有成本<input id="houseMonthlyCostInput" type="number" min="0" step="1000"></label>
-        <label>原本每月房租<input id="houseRentOffsetInput" type="number" min="0" step="1000"></label>
-        <label>房屋年增值率（%）<input id="houseAppreciationInput" type="number" min="-20" max="30" step="0.1"></label>
       </div>
 
       <div class="subsection">
